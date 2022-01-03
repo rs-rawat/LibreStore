@@ -3,21 +3,26 @@ public class MainTokenData{
 
     private IPersistable dataPersistor;
 
-    MainToken MainToken;
+    private MainToken mainToken;
     public MainTokenData(IPersistable dataPersistor, MainToken mainToken)
     {
-        this.dataPersistor = dataPersistor;
-        this.MainToken = mainToken;
+        this.dataPersistor = dataPersistor as SqliteProvider;
+        this.mainToken = mainToken;
         
-    // @"
-    //     SELECT name
-    //     FROM user
-    //     WHERE id = $id
-    // ";
-    // command.Parameters.AddWithValue("$id", id);
     }
 
-    public void ConfigInsert(){
-        
+    public int Configure(){
+        if (dataPersistor != null)
+        {
+            SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
+            
+            sqliteProvider.command.CommandText = @"INSERT into MainToken (key)values($key)";
+            sqliteProvider.command.Parameters.AddWithValue("$key",mainToken.Key);
+            return 0;
+        }
+        return 1;
     }
+
+
+
 }

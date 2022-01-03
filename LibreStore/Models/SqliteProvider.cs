@@ -1,18 +1,30 @@
 using Microsoft.Data.Sqlite;
 using LibreStore.Models;
-class SqliteProvider : IPersistable{
+public class SqliteProvider : IPersistable{
 
     private SqliteConnection connection;
-    private SqliteCommand command;
-    private String commandText;
-
-    private String createTableQuery = @"CREATE TABLE IF NOT EXISTS [MainToken]
+    public SqliteCommand command{get;set;}
+    
+    private String [] allTableCreation = {
+                @"CREATE TABLE IF NOT EXISTS [MainToken]
                 (
                 [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                [Key] NVARCHAR(2048)  NULL
-                )";
+                [Key] NVARCHAR(2048)  NOT NULL,
+                [Created] NVARCHAR(30) default (datetime('now','localtime')),
+                [Active] BOOLEAN default (1)
+                )",
 
-    public SqliteProvider(String commandText)
+                @"CREATE TABLE IF NOT EXISTS [Data]
+                (
+                    [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    [MainTokenId] INTEGER NOT NULL,
+                    [Data] NVARCHAR(65535),
+                    [Created] NVARCHAR(30) default (datetime('now','localtime')),
+                    [Updated] NVARCHAR(30) ,
+                    [Active] BOOLEAN default(1)
+                )"};
+
+    public SqliteProvider()
     {
         connection = new SqliteConnection("Data Source=librestore.db");
         // ########### FYI THE DB is created when it is OPENED ########
@@ -20,21 +32,18 @@ class SqliteProvider : IPersistable{
         command = connection.CreateCommand();
         FileInfo fi = new FileInfo("librestore.db");
         if (fi.Length == 0){
-            command.CommandText = createTableQuery;
-            
-            command.ExecuteNonQuery();
+            foreach (String tableCreate in allTableCreation){
+                command.CommandText = tableCreate;
+                command.ExecuteNonQuery();
+            }
             connection.Close();
         }
         Console.WriteLine(connection.DataSource);
         
-        command.CommandText = commandText;
-        
     }
-
-    public void ConfigInsert(MainToken mt){
-        command.Parameters.AddWithValue("$key",mt.Key);
-    }
+    
     public int Save(){
+        
         Console.WriteLine("Saving...");
         connection.Open();
         Console.WriteLine("Opening...");

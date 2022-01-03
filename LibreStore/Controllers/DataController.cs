@@ -16,8 +16,8 @@ public class DataController : Controller
         _logger = logger;
     }
 
-    [HttpGet("DoWork")]
-    public ActionResult DoWork(String key){
+    [HttpGet("SaveToken")]
+    public ActionResult SaveToken(String key){
 
         MainToken mt = new MainToken(key);
         PropertyInfo[] properties = mt.GetType().GetProperties();
@@ -26,12 +26,20 @@ public class DataController : Controller
             var myVal = $"{p.Name} : {p.PropertyType} :{p.GetValue(mt)}";
             Console.WriteLine(myVal);
         }
-        String mainTokenInsert = @"INSERT into MainToken (key)values($key)";
-        SqliteProvider sp = new SqliteProvider(mainTokenInsert);
-        sp.ConfigInsert(mt);
+        
+        SqliteProvider sp = new SqliteProvider();
+        
+        
         MainTokenData mtd = new MainTokenData(sp,mt);
+        mtd.Configure();
         sp.Save();
         
+        var jsonResult = new {success=true};
+        return new JsonResult(jsonResult);
+    }
+
+    [HttpGet("SaveData")]
+    public ActionResult SaveData(String key, String data){
         var jsonResult = new {success=true};
         return new JsonResult(jsonResult);
     }
