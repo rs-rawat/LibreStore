@@ -46,7 +46,12 @@ public class DataController : Controller
     [HttpGet("SaveData")]
     public ActionResult SaveData(String key, String data){
         SqliteProvider sp = new SqliteProvider();
-        WriteUsage(sp,"SaveData",key);
+        var mainTokenId = WriteUsage(sp,"SaveData",key);
+        sp = new SqliteProvider();
+        Bucket b = new Bucket(mainTokenId,data);
+        BucketData bd = new BucketData(sp,b);
+        bd.Configure();
+        sp.Save();
         
         var jsonResult = new {success=true};
         return new JsonResult(jsonResult);
@@ -63,7 +68,7 @@ public class DataController : Controller
         return new JsonResult(allTokens);
     }
 
-    private void WriteUsage(SqliteProvider sp, String action, String key){
+    private int WriteUsage(SqliteProvider sp, String action, String key){
         var ipAddress = Request.HttpContext.Connection.RemoteIpAddress;
         MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
         mtd.ConfigureInsert();
@@ -72,6 +77,7 @@ public class DataController : Controller
         UsageData ud = new UsageData(sp,u);
         ud.Configure();
         sp.Save();
+        return mainTokenId;
     }
 
     public string Hash(string value) 

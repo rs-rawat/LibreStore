@@ -10,12 +10,12 @@ public class SqliteProvider : IPersistable{
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     [OwnerId] INTEGER NOT NULL default(0),
-                    [Key] NVARCHAR(2048)  NOT NULL UNIQUE,
+                    [Key] NVARCHAR(128)  NOT NULL UNIQUE,
                     [Created] NVARCHAR(30) default (datetime('now','localtime')),
                     [Active] BOOLEAN default (1)
                 )",
 
-                @"CREATE TABLE IF NOT EXISTS [Data]
+                @"CREATE TABLE IF NOT EXISTS [Bucket]
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     [MainTokenId] INTEGER NOT NULL,
