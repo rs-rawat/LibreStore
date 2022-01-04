@@ -16,7 +16,9 @@ public class UsageData{
         {
             SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
             
-            sqliteProvider.command.CommandText = @"INSERT into Usage (ipaddress,action)values($ipaddress,$action)";
+            sqliteProvider.command.CommandText = @"INSERT into Usage (maintokenid,ipaddress,action)values($mainTokenId,$ipaddress,$action)";
+            // Console.WriteLine($"usage.MainTokenId: {usage.MainTokenId}");
+            sqliteProvider.command.Parameters.AddWithValue("$mainTokenId",usage.MainTokenId);
             sqliteProvider.command.Parameters.AddWithValue("$ipaddress",usage.IpAddress);
             sqliteProvider.command.Parameters.AddWithValue("$action", usage.Action);
             return 0;

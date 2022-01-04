@@ -30,9 +30,11 @@ public class DataController : Controller
         }
         
         SqliteProvider sp = new SqliteProvider();
-        
-        WriteUsage(sp,"SaveToken");
+        WriteUsage(sp,"SaveToken",key);
 
+        // Had to new up the SqliteProvider to insure it was initialized properly
+        // for use with MainTokenData
+        sp = new SqliteProvider();
         MainTokenData mtd = new MainTokenData(sp,mt);
         mtd.Configure();
         sp.Save();
@@ -44,7 +46,7 @@ public class DataController : Controller
     [HttpGet("SaveData")]
     public ActionResult SaveData(String key, String data){
         SqliteProvider sp = new SqliteProvider();
-        WriteUsage(sp,"SaveData");
+        WriteUsage(sp,"SaveData",key);
         
         var jsonResult = new {success=true};
         return new JsonResult(jsonResult);
@@ -61,10 +63,12 @@ public class DataController : Controller
         return new JsonResult(allTokens);
     }
 
-    private void WriteUsage(SqliteProvider sp, String action){
+    private void WriteUsage(SqliteProvider sp, String action, String key){
         var ipAddress = Request.HttpContext.Connection.RemoteIpAddress;
-        
-        Usage u = new Usage(ipAddress.ToString(),action);
+        MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
+        mtd.ConfigureInsert();
+        var mainTokenId = sp.GetOrInsert();
+        Usage u = new Usage(mainTokenId,ipAddress.ToString(),action);
         UsageData ud = new UsageData(sp,u);
         ud.Configure();
         sp.Save();

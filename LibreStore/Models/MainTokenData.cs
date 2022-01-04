@@ -23,6 +23,25 @@ public class MainTokenData{
         return 1;
     }
 
+    public int ConfigureInsert(){
+        if (dataPersistor != null)
+        {
+            SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
+            String sqlCommand = @"insert into maintoken (key)  
+                    select $key 
+                    where not exists 
+                    (select key from maintoken where key=$key);
+                     select id from maintoken where key=$key";
+            
+            sqliteProvider.command.CommandText = sqlCommand;
+            sqliteProvider.command.Parameters.AddWithValue("$key",mainToken.Key);
+            return 0;
+            
+        }
+        return 2;
+
+    }
+
 
 
 }

@@ -9,7 +9,8 @@ public class SqliteProvider : IPersistable{
                 @"CREATE TABLE IF NOT EXISTS [MainToken]
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    [Key] NVARCHAR(2048)  NOT NULL,
+                    [OwnerId] INTEGER NOT NULL default(0),
+                    [Key] NVARCHAR(2048)  NOT NULL UNIQUE,
                     [Created] NVARCHAR(30) default (datetime('now','localtime')),
                     [Active] BOOLEAN default (1)
                 )",
@@ -23,9 +24,11 @@ public class SqliteProvider : IPersistable{
                     [Updated] NVARCHAR(30) ,
                     [Active] BOOLEAN default(1)
                 )",
+
                 @"CREATE TABLE IF NOT EXISTS [Usage]
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    [MainTokenId] INTEGER NOT NULL default(0),
                     [IpAddress] NVARCHAR(60),
                     [Action] NVARCHAR(75),
                     [Created] NVARCHAR(30) default (datetime('now','localtime')),
@@ -35,20 +38,25 @@ public class SqliteProvider : IPersistable{
 
     public SqliteProvider()
     {
-        connection = new SqliteConnection("Data Source=librestore.db");
-        // ########### FYI THE DB is created when it is OPENED ########
-        connection.Open();
-        command = connection.CreateCommand();
-        FileInfo fi = new FileInfo("librestore.db");
-        if (fi.Length == 0){
-            foreach (String tableCreate in allTableCreation){
-                command.CommandText = tableCreate;
-                command.ExecuteNonQuery();
-            }
-            connection.Close();
+        try{
+                connection = new SqliteConnection("Data Source=librestore.db");
+                // ########### FYI THE DB is created when it is OPENED ########
+                connection.Open();
+                command = connection.CreateCommand();
+                FileInfo fi = new FileInfo("librestore.db");
+                if (fi.Length == 0){
+                    foreach (String tableCreate in allTableCreation){
+                        command.CommandText = tableCreate;
+                        command.ExecuteNonQuery();
+                    }
+                }
+                Console.WriteLine(connection.DataSource);
         }
-        Console.WriteLine(connection.DataSource);
-        
+        finally{
+            if (connection != null){
+                connection.Close();
+            }
+        }
     }
 
     public List<MainToken> GetAllTokens(){
@@ -60,37 +68,59 @@ public class SqliteProvider : IPersistable{
             {
                 while (reader.Read())
                 {
-                    var key = reader.GetString(1);
-                    var created = reader.GetString(2);
-                    var active = reader.GetString(3);
-                    allTokens.Add(new MainToken(key));
+                    var id = reader.GetInt32(0);
+                    var ownerId = reader.GetInt32(1);
+                    var key = reader.GetString(2);
+                    var created = reader.GetString(3);
+                    var active = reader.GetInt16(4);
+                    allTokens.Add(new MainToken(id,key,DateTime.Parse(created),ownerId,Convert.ToBoolean(active)));
                     Console.WriteLine($"key: {key}!");
                 }
             }
             return allTokens;
         }
         finally{
-            connection.Close();
+            if (connection != null){
+                connection.Close();
+            }
+        }
+    }
+
+    public int GetOrInsert(){
+        try{
+            Console.WriteLine("GetOrInsert...");
+            connection.Open();
+            Console.WriteLine("Opening...");
+            using (var reader = command.ExecuteReader())
+            {
+                reader.Read();
+                var id = reader.GetInt32(0);
+                Console.WriteLine($"GetOrInsert() id: {id}");
+                reader.Close();
+                return id;
+            }
+        }
+        finally{
+            if (connection != null){
+                connection.Close();
+            }
         }
     }
     
     public int Save(){
         
-        Console.WriteLine("Saving...");
-        connection.Open();
-        Console.WriteLine("Opening...");
-        command.ExecuteNonQuery();
-        Console.WriteLine("inserting...");
-        // using (var reader = command.ExecuteReader())
-        // {
-        //     while (reader.Read())
-        //     {
-        //         var name = reader.GetString(0);
-
-        //         Console.WriteLine($"Hello, {name}!");
-        //     }
-        // }
-
+        try{
+            Console.WriteLine("Saving...");
+            connection.Open();
+            Console.WriteLine("Opened.");
+            command.ExecuteNonQuery();
+            Console.WriteLine("inserted.");
             return 0;
+        }
+        finally{
+            if (connection != null){
+                connection.Close();
+            }
+        }
     }
 }

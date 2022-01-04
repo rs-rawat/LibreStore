@@ -14,4 +14,13 @@ public class MainToken{
         Created = DateTime.Now;
         Active = true;
     }
+
+    public MainToken(int id, String key,  DateTime created, int ownerId, bool active)
+    {
+        Id = id;
+        OwnerId = ownerId;
+        Key = key;
+        Created = created;
+        Active = true;
+    }
 }
