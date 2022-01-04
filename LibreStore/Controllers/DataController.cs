@@ -2,6 +2,8 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using LibreStore.Models;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace LibreStore.Controllers;
 
@@ -48,6 +50,17 @@ public class DataController : Controller
         return new JsonResult(jsonResult);
     }
 
+    [HttpGet("GetAllTokens")]
+    public ActionResult GetAllTokens(String pwd){
+        SqliteProvider sp = new SqliteProvider();
+        List<MainToken> allTokens = sp.GetAllTokens();
+        if (Hash(pwd) != "86BC2CA50432385C30E2FAC2923AA6D19F7304E213DAB1D967A8D063BEF50EE1"){
+            return new JsonResult(new {result="false",message="couldn't authenticate request"});
+        }
+
+        return new JsonResult(allTokens);
+    }
+
     private void WriteUsage(SqliteProvider sp, String action){
         var ipAddress = Request.HttpContext.Connection.RemoteIpAddress;
         
@@ -55,6 +68,13 @@ public class DataController : Controller
         UsageData ud = new UsageData(sp,u);
         ud.Configure();
         sp.Save();
+    }
+
+    public string Hash(string value) 
+    { 
+        var sha = SHA256.Create();
+        byte[] hash = sha.ComputeHash(Encoding.ASCII.GetBytes(value)); 
+        return String.Concat(Array.ConvertAll(hash, x => x.ToString("X2"))); 
     }
 
     // public IActionResult Index()

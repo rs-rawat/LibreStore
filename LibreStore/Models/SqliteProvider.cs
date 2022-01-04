@@ -50,6 +50,29 @@ public class SqliteProvider : IPersistable{
         Console.WriteLine(connection.DataSource);
         
     }
+
+    public List<MainToken> GetAllTokens(){
+        command.CommandText = "Select * from MainToken";
+        List<MainToken> allTokens = new List<MainToken>();
+        try{
+            connection.Open();
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    var key = reader.GetString(1);
+                    var created = reader.GetString(2);
+                    var active = reader.GetString(3);
+                    allTokens.Add(new MainToken(key));
+                    Console.WriteLine($"key: {key}!");
+                }
+            }
+            return allTokens;
+        }
+        finally{
+            connection.Close();
+        }
+    }
     
     public int Save(){
         
