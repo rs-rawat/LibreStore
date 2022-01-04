@@ -6,7 +6,7 @@ public class MainTokenData{
     private MainToken mainToken;
     public MainTokenData(IPersistable dataPersistor, MainToken mainToken)
     {
-        this.dataPersistor = dataPersistor as SqliteProvider;
+        this.dataPersistor = dataPersistor;
         this.mainToken = mainToken;
         
     }

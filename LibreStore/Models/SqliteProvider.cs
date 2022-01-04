@@ -8,10 +8,10 @@ public class SqliteProvider : IPersistable{
     private String [] allTableCreation = {
                 @"CREATE TABLE IF NOT EXISTS [MainToken]
                 (
-                [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                [Key] NVARCHAR(2048)  NOT NULL,
-                [Created] NVARCHAR(30) default (datetime('now','localtime')),
-                [Active] BOOLEAN default (1)
+                    [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    [Key] NVARCHAR(2048)  NOT NULL,
+                    [Created] NVARCHAR(30) default (datetime('now','localtime')),
+                    [Active] BOOLEAN default (1)
                 )",
 
                 @"CREATE TABLE IF NOT EXISTS [Data]
@@ -22,7 +22,16 @@ public class SqliteProvider : IPersistable{
                     [Created] NVARCHAR(30) default (datetime('now','localtime')),
                     [Updated] NVARCHAR(30) ,
                     [Active] BOOLEAN default(1)
-                )"};
+                )",
+                @"CREATE TABLE IF NOT EXISTS [Usage]
+                (
+                    [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    [IpAddress] NVARCHAR(60),
+                    [Action] NVARCHAR(75),
+                    [Created] NVARCHAR(30) default (datetime('now','localtime')),
+                    [Active] BOOLEAN default (1)
+                )
+                "};
 
     public SqliteProvider()
     {

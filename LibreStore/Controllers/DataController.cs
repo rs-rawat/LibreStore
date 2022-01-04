@@ -29,7 +29,8 @@ public class DataController : Controller
         
         SqliteProvider sp = new SqliteProvider();
         
-        
+        WriteUsage(sp,"SaveToken");
+
         MainTokenData mtd = new MainTokenData(sp,mt);
         mtd.Configure();
         sp.Save();
@@ -40,8 +41,20 @@ public class DataController : Controller
 
     [HttpGet("SaveData")]
     public ActionResult SaveData(String key, String data){
+        SqliteProvider sp = new SqliteProvider();
+        WriteUsage(sp,"SaveData");
+        
         var jsonResult = new {success=true};
         return new JsonResult(jsonResult);
+    }
+
+    private void WriteUsage(SqliteProvider sp, String action){
+        var ipAddress = Request.HttpContext.Connection.RemoteIpAddress;
+        
+        Usage u = new Usage(ipAddress.ToString(),action);
+        UsageData ud = new UsageData(sp,u);
+        ud.Configure();
+        sp.Save();
     }
 
     // public IActionResult Index()
