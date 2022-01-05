@@ -47,12 +47,17 @@ public class DataController : Controller
     public ActionResult SaveData(String key, String data){
         SqliteProvider sp = new SqliteProvider();
         var mainTokenId = WriteUsage(sp,"SaveData",key);
+        // if mainTokenId == 0 then an error occurred.
+        if (mainTokenId == 0){
+            var jsonErrorResult = new {success=false,message="Couldn't save data because of invalid MainToken.Key."};
+            return new JsonResult(jsonErrorResult);    
+        }
         sp = new SqliteProvider();
         Bucket b = new Bucket(mainTokenId,data);
         BucketData bd = new BucketData(sp,b);
         bd.Configure();
         sp.Save();
-        
+    
         var jsonResult = new {success=true};
         return new JsonResult(jsonResult);
     }

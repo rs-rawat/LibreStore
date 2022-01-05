@@ -10,8 +10,8 @@ public class SqliteProvider : IPersistable{
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     [OwnerId] INTEGER NOT NULL default(0),
-                    [Key] NVARCHAR(128)  NOT NULL UNIQUE,
-                    [Created] NVARCHAR(30) default (datetime('now','localtime')),
+                    [Key] NVARCHAR(128)  NOT NULL UNIQUE check(length(Key) <= 128),
+                    [Created] NVARCHAR(30) default (datetime('now','localtime')) check(length(Created) <= 30),
                     [Active] BOOLEAN default (1)
                 )",
 
@@ -19,9 +19,9 @@ public class SqliteProvider : IPersistable{
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     [MainTokenId] INTEGER NOT NULL,
-                    [Data] NVARCHAR(65535),
-                    [Created] NVARCHAR(30) default (datetime('now','localtime')),
-                    [Updated] NVARCHAR(30) ,
+                    [Data] NVARCHAR(65535) check(length(Data) <= 65535),
+                    [Created] NVARCHAR(30) default (datetime('now','localtime')) check(length(Created) <= 30),
+                    [Updated] NVARCHAR(30) check(length(Updated) <= 30),
                     [Active] BOOLEAN default(1)
                 )",
 
@@ -29,9 +29,9 @@ public class SqliteProvider : IPersistable{
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     [MainTokenId] INTEGER NOT NULL default(0),
-                    [IpAddress] NVARCHAR(60),
-                    [Action] NVARCHAR(75),
-                    [Created] NVARCHAR(30) default (datetime('now','localtime')),
+                    [IpAddress] NVARCHAR(60) check(length(IpAddress) <= 60),
+                    [Action] NVARCHAR(75) check(length(Action) <= 75),
+                    [Created] NVARCHAR(30) default (datetime('now','localtime')) check(length(Created) <= 30),
                     [Active] BOOLEAN default (1)
                 )
                 "};
@@ -79,6 +79,10 @@ public class SqliteProvider : IPersistable{
             }
             return allTokens;
         }
+        catch(Exception ex){
+            Console.WriteLine($"Error: {ex.Message}");
+            return allTokens;
+        }
         finally{
             if (connection != null){
                 connection.Close();
@@ -100,6 +104,10 @@ public class SqliteProvider : IPersistable{
                 return id;
             }
         }
+        catch(Exception ex){
+            Console.WriteLine($"Error: {ex.Message}");
+            return 0;
+        }
         finally{
             if (connection != null){
                 connection.Close();
@@ -116,6 +124,10 @@ public class SqliteProvider : IPersistable{
             command.ExecuteNonQuery();
             Console.WriteLine("inserted.");
             return 0;
+        }
+        catch(Exception ex){
+            Console.WriteLine($"Error: {ex.Message}");
+            return 1;
         }
         finally{
             if (connection != null){
