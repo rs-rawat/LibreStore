@@ -54,6 +54,20 @@ public class DataController : Controller
         return new JsonResult(jsonResult);
     }
 
+    [HttpGet("GetData")]
+    public ActionResult GetData(Int64 mainTokenId, Int64 bucketId){
+        SqliteProvider sp = new SqliteProvider();
+        Bucket b = new Bucket(bucketId,mainTokenId);
+        BucketData bd = new BucketData(sp,b);
+        bd.ConfigureSelect();
+        b = sp.GetBucket();
+        
+        // if Bucket.Id is > 0 then a valid bucket was returned
+        // otherwise there was not matching bucket (b.id == 0)
+        var jsonResult = new {success=(b.Id > 0),bucket=b};
+        return new JsonResult(jsonResult);
+    }
+
     [HttpGet("GetAllTokens")]
     public ActionResult GetAllTokens(String pwd){
         List<MainToken> allTokens = new List<MainToken>();

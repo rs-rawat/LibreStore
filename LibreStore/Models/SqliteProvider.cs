@@ -114,6 +114,43 @@ public class SqliteProvider : IPersistable{
             }
         }
     }
+
+    public Bucket GetBucket(){
+        try{
+            Console.WriteLine("GetBucket...");
+            connection.Open();
+            Console.WriteLine("Opening...");
+            using (var reader = command.ExecuteReader())
+            {
+                reader.Read();
+                var id = reader.GetInt64(0);
+                var mainTokenId = reader.GetInt64(1);
+                var data = reader.GetString(2);
+                var created = "";
+                if (!reader.IsDBNull(3)){
+                    created = reader.GetString(3);
+                }
+                var updated = "";
+                if (!reader.IsDBNull(4)){
+                    updated = reader.GetString(4);
+                }
+                var active = reader.GetBoolean(5);
+                Bucket b = new Bucket(id,mainTokenId,data,created,updated,active);
+                Console.WriteLine($"GetBucket() id: {b.Id}");
+                reader.Close();
+                return b;
+            }
+        }
+        catch(Exception ex){
+            Console.WriteLine($"Error: {ex.Message}");
+            return new Bucket(0,0);
+        }
+        finally{
+            if (connection != null){
+                connection.Close();
+            }
+        }
+    }
     
     public Int64 Save(){
         

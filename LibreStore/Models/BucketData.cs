@@ -23,4 +23,17 @@ public class BucketData{
         }
         return 1;
     }
+
+    public int ConfigureSelect(){
+        if (dataPersistor != null)
+        {
+            SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
+            
+            sqliteProvider.command.CommandText = @"select * from Bucket where Id = $id and mainTokenId = $mainTokenId";
+            sqliteProvider.command.Parameters.AddWithValue("$mainTokenId",bucket.MainTokenId);
+            sqliteProvider.command.Parameters.AddWithValue("$id",bucket.Id);
+            return 0;
+        }
+        return 1;
+    }
 }

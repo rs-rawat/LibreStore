@@ -5,4 +5,3 @@ id = mt.id;
 select seq from sqlite_sequence where name='Usage';
 
 select * from usage LIMIT 2;
-
