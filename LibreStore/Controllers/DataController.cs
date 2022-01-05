@@ -61,7 +61,10 @@ public class DataController : Controller
         BucketData bd = new BucketData(sp,b);
         bd.ConfigureSelect();
         b = sp.GetBucket();
-        
+
+        sp = new SqliteProvider();
+        WriteUsage(sp,"GetData",String.Empty,mainTokenId);
+
         // if Bucket.Id is > 0 then a valid bucket was returned
         // otherwise there was not matching bucket (b.id == 0)
         var jsonResult = new {success=(b.Id > 0),bucket=b};
@@ -86,11 +89,15 @@ public class DataController : Controller
         return new JsonResult(allTokens);
     }
 
-    private int WriteUsage(SqliteProvider sp, String action, String key=""){
+    private Int64 WriteUsage(SqliteProvider sp, String action, String key="", Int64 mainTokenId=0){
         var ipAddress = Request?.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "0.0.0.0";
-        MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
-        mtd.ConfigureInsert();
-        var mainTokenId = sp.GetOrInsert();
+        
+        if (mainTokenId == 0){
+            MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
+            mtd.ConfigureInsert();
+            mainTokenId = sp.GetOrInsert();
+        }
+        
         Usage u = new Usage(mainTokenId,ipAddress,action);
         UsageData ud = new UsageData(sp,u);
         ud.Configure();

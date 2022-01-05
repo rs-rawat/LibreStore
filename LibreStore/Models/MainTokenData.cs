@@ -31,7 +31,7 @@ public class MainTokenData{
                     select $key 
                     where not exists 
                     (select key from maintoken where key=$key);
-                     select id from maintoken where key=$key";
+                     select id from maintoken where key=$key and active=1";
             
             sqliteProvider.command.CommandText = sqlCommand;
             sqliteProvider.command.Parameters.AddWithValue("$key",mainToken.Key);

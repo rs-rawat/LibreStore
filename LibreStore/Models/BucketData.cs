@@ -29,7 +29,7 @@ public class BucketData{
         {
             SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
             
-            sqliteProvider.command.CommandText = @"select * from Bucket where Id = $id and mainTokenId = $mainTokenId";
+            sqliteProvider.command.CommandText = @"select * from Bucket where Id = $id and mainTokenId = $mainTokenId and active=1";
             sqliteProvider.command.Parameters.AddWithValue("$mainTokenId",bucket.MainTokenId);
             sqliteProvider.command.Parameters.AddWithValue("$id",bucket.Id);
             return 0;
