@@ -115,19 +115,20 @@ public class SqliteProvider : IPersistable{
         }
     }
     
-    public int Save(){
+    public Int64 Save(){
         
         try{
             Console.WriteLine("Saving...");
             connection.Open();
             Console.WriteLine("Opened.");
-            command.ExecuteNonQuery();
+            // id should be last id inserted into table
+            var id = Convert.ToInt64(command.ExecuteScalar());
             Console.WriteLine("inserted.");
-            return 0;
+            return id;
         }
         catch(Exception ex){
             Console.WriteLine($"Error: {ex.Message}");
-            return 1;
+            return 0;
         }
         finally{
             if (connection != null){

@@ -1,4 +1,4 @@
 public interface IPersistable
 {
-	int Save();
+	Int64 Save();
 }

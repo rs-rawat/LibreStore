@@ -48,9 +48,9 @@ public class DataController : Controller
         Bucket b = new Bucket(mainTokenId,data);
         BucketData bd = new BucketData(sp,b);
         bd.Configure();
-        sp.Save();
+        var bucketId = sp.Save();
     
-        var jsonResult = new {success=true};
+        var jsonResult = new {success=true,MainTokenId=mainTokenId,BucketId=bucketId};
         return new JsonResult(jsonResult);
     }
 

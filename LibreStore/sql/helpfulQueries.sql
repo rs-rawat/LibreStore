@@ -2,3 +2,7 @@
 select mt.key,us.* from maintoken as mt join usage as us on us.maintoken
 id = mt.id;
 
+select seq from sqlite_sequence where name='Usage';
+
+select * from usage LIMIT 2;
+
