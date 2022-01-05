@@ -74,7 +74,7 @@ public class SqliteProvider : IPersistable{
                     var created = reader.GetString(3);
                     var active = reader.GetInt16(4);
                     allTokens.Add(new MainToken(id,key,DateTime.Parse(created),ownerId,Convert.ToBoolean(active)));
-                    Console.WriteLine($"key: {key}!");
+                    Console.WriteLine($"key: {key}");
                 }
             }
             return allTokens;

@@ -1,7 +1,21 @@
 var builder = WebApplication.CreateBuilder(args);
-
+String AllowSpecificOrigins = "AllowSpecificOrigins";
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                builder =>{
+                    builder /*WithOrigins("http://raddev.us",
+                                        "http://www.raddev.us",
+                                        "https://newlibre.com"
+                                        )*/
+                                        .AllowAnyMethod()
+                                        .AllowAnyHeader()
+                                        .AllowAnyOrigin();             
+                                        //.WithMethods("GET");
+                });
+            });
 
 var app = builder.Build();
 
@@ -17,6 +31,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors(AllowSpecificOrigins);
 
 app.UseAuthorization();
 
