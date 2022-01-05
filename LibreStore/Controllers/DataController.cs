@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using LibreStore.Models;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -22,12 +20,6 @@ public class DataController : Controller
     public ActionResult SaveToken(String key){
 
         MainToken mt = new MainToken(key);
-        PropertyInfo[] properties = mt.GetType().GetProperties();
-        foreach (var p in properties)
-        {   
-            var myVal = $"{p.Name} : {p.PropertyType} :{p.GetValue(mt)}";
-            Console.WriteLine(myVal);
-        }
         
         SqliteProvider sp = new SqliteProvider();
         WriteUsage(sp,"SaveToken",key);
