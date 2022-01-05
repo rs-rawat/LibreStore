@@ -10,7 +10,7 @@ public class SqliteProvider : IPersistable{
                 (
                     [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     [OwnerId] INTEGER NOT NULL default(0),
-                    [Key] NVARCHAR(128)  NOT NULL UNIQUE check(length(Key) <= 128),
+                    [Key] NVARCHAR(128)  NOT NULL UNIQUE check(length(Key) <= 128) check(length(key) >= 10),
                     [Created] NVARCHAR(30) default (datetime('now','localtime')) check(length(Created) <= 30),
                     [Active] BOOLEAN default (1)
                 )",

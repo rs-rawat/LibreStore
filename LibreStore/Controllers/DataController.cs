@@ -56,21 +56,28 @@ public class DataController : Controller
 
     [HttpGet("GetAllTokens")]
     public ActionResult GetAllTokens(String pwd){
+        List<MainToken> allTokens = new List<MainToken>();
         SqliteProvider sp = new SqliteProvider();
-        List<MainToken> allTokens = sp.GetAllTokens();
         if (Hash(pwd) != "86BC2CA50432385C30E2FAC2923AA6D19F7304E213DAB1D967A8D063BEF50EE1"){
+            WriteUsage(sp,"GetAllTokens - rejected");
             return new JsonResult(new {result="false",message="couldn't authenticate request"});
         }
+        sp = new SqliteProvider();
+        allTokens = sp.GetAllTokens();
 
+        sp = new SqliteProvider();
+        // just want to get IP Address of 
+        WriteUsage(sp,"GetAllTokens");
+        
         return new JsonResult(allTokens);
     }
 
-    private int WriteUsage(SqliteProvider sp, String action, String key){
-        var ipAddress = Request.HttpContext.Connection.RemoteIpAddress;
+    private int WriteUsage(SqliteProvider sp, String action, String key=""){
+        var ipAddress = Request?.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "0.0.0.0";
         MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
         mtd.ConfigureInsert();
         var mainTokenId = sp.GetOrInsert();
-        Usage u = new Usage(mainTokenId,ipAddress.ToString(),action);
+        Usage u = new Usage(mainTokenId,ipAddress,action);
         UsageData ud = new UsageData(sp,u);
         ud.Configure();
         sp.Save();
