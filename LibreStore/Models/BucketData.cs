@@ -8,7 +8,6 @@ public class BucketData{
     {
         this.dataPersistor = dataPersistor;
         this.bucket = bucket;
-        
     }
 
     public int Configure(){
@@ -24,13 +23,15 @@ public class BucketData{
         return 1;
     }
 
-    public int ConfigureSelect(){
+    public int ConfigureSelect(String key){
         if (dataPersistor != null)
         {
             SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
-            
-            sqliteProvider.command.CommandText = @"select * from Bucket where Id = $id and mainTokenId = $mainTokenId and active=1";
-            sqliteProvider.command.Parameters.AddWithValue("$mainTokenId",bucket.MainTokenId);
+            sqliteProvider.command.CommandText = @"select b.* from MainToken as mt 
+                    join bucket as b on mt.id = b.mainTokenId 
+                    where mt.Key=$key and b.Id = $id
+                    and b.active = 1 and mt.active=1";
+            sqliteProvider.command.Parameters.AddWithValue("$key",key);
             sqliteProvider.command.Parameters.AddWithValue("$id",bucket.Id);
             return 0;
         }

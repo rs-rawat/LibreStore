@@ -39,7 +39,16 @@ public class MainTokenData{
             
         }
         return 2;
+    }
 
+    public int ConfigureSelect(){
+            SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
+            String sqlCommand = @"select id from maintoken
+                    where key = $key and active=1";
+            
+            sqliteProvider.command.CommandText = sqlCommand;
+            sqliteProvider.command.Parameters.AddWithValue("$key",mainToken.Key);
+            return 0;
     }
 
 

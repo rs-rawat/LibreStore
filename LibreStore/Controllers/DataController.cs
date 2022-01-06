@@ -50,20 +50,19 @@ public class DataController : Controller
         bd.Configure();
         var bucketId = sp.Save();
     
-        var jsonResult = new {success=true,MainTokenId=mainTokenId,BucketId=bucketId};
+        var jsonResult = new {success=true,BucketId=bucketId};
         return new JsonResult(jsonResult);
     }
 
     [HttpGet("GetData")]
-    public ActionResult GetData(Int64 mainTokenId, Int64 bucketId){
+    public ActionResult GetData(String key, Int64 bucketId){
         SqliteProvider sp = new SqliteProvider();
+        var mainTokenId = WriteUsage(sp,"GetData",key,false);
+        sp = new SqliteProvider();
         Bucket b = new Bucket(bucketId,mainTokenId);
         BucketData bd = new BucketData(sp,b);
-        bd.ConfigureSelect();
+        bd.ConfigureSelect(key);
         b = sp.GetBucket();
-
-        sp = new SqliteProvider();
-        WriteUsage(sp,"GetData",String.Empty,mainTokenId);
 
         // if Bucket.Id is > 0 then a valid bucket was returned
         // otherwise there was not matching bucket (b.id == 0)
@@ -89,15 +88,19 @@ public class DataController : Controller
         return new JsonResult(allTokens);
     }
 
-    private Int64 WriteUsage(SqliteProvider sp, String action, String key="", Int64 mainTokenId=0){
+    private Int64 WriteUsage(SqliteProvider sp, String action, String key="", bool shouldInsert=true){
         var ipAddress = Request?.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "0.0.0.0";
         
-        if (mainTokenId == 0){
-            MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
-            mtd.ConfigureInsert();
-            mainTokenId = sp.GetOrInsert();
-        }
+        MainTokenData mtd = new MainTokenData(sp,new MainToken(key));
         
+        if (shouldInsert){
+            mtd.ConfigureInsert();
+        }
+        else{
+            mtd.ConfigureSelect();
+        }
+        var mainTokenId = sp.GetOrInsert();
+
         Usage u = new Usage(mainTokenId,ipAddress,action);
         UsageData ud = new UsageData(sp,u);
         ud.Configure();
