@@ -5,3 +5,6 @@ id = mt.id;
 select seq from sqlite_sequence where name='Usage';
 
 select * from usage LIMIT 2;
+
+-- similar to select @@IDENTITY or SELECT SCOPE_IDENTITY() 
+SELECT last_insert_rowid();

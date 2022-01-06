@@ -16,7 +16,7 @@ public class BucketData{
         {
             SqliteProvider sqliteProvider = dataPersistor as SqliteProvider;
             
-            sqliteProvider.command.CommandText = @"INSERT into Bucket (mainTokenId,data)values($mainTokenId,$data);select seq from sqlite_sequence where name='Bucket'";
+            sqliteProvider.command.CommandText = @"INSERT into Bucket (mainTokenId,data)values($mainTokenId,$data);SELECT last_insert_rowid()";
             sqliteProvider.command.Parameters.AddWithValue("$mainTokenId",bucket.MainTokenId);
             sqliteProvider.command.Parameters.AddWithValue("$data",bucket.Data);
             return 0;
