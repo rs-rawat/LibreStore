@@ -2,6 +2,9 @@ namespace LibreStore.Models;
 
 public class Bucket{
     public Int64 Id{get;set;}
+    
+    // We don't want this value exposed to end user
+    [System.Text.Json.Serialization.JsonIgnore]
     public Int64 MainTokenId{get;set;}
     public String? Data{get;set;}
     public DateTime? Created {get;set;}
